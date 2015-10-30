@@ -91,7 +91,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 myText1.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
                 myText1.setTextSize(15);
-                myText1.setTextColor(Color.WHITE);
+                myText1.setTextColor(Color.BLUE);
                 return myText1;
             }
         });
@@ -103,7 +103,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 TextView myText = new TextView(MainActivity.this);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
                 myText.setTextSize(15);
-                myText.setTextColor(Color.WHITE);
+                myText.setTextColor(Color.BLUE);
                 return myText;
             }
         });

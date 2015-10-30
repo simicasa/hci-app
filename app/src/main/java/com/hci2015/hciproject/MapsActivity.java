@@ -1,6 +1,5 @@
 package com.hci2015.hciproject;
 
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,11 +9,19 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.gson.Gson;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,16 +57,25 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private View infowindow;
     public TextView t;
     public ImageView img;
-    private Map<String,String> Id = new HashMap<String,String>();
-    private Map<String,String> NuovoId = new HashMap<String,String>();
-    private Map<String,Bitmap> immagine_marker =new HashMap<String,Bitmap>();
+    private Map<String, String> Id = new HashMap<String, String>();
+    private Map<String, String> NuovoId = new HashMap<String, String>();
+    private Map<String, Bitmap> immagine_marker = new HashMap<String, Bitmap>();
     public Button b;
+
+    //prova ricerca
+    public EditText et;
+    public ListView lv;
+    public ArrayList<String> array_sort;
+    int textlength = 0;
+    public ArrayAdapter<String> adapter;
+    public Map<Integer,PuntoSuMappa>associativo=new HashMap<Integer,PuntoSuMappa>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
-        infowindow=getLayoutInflater().inflate(R.layout.windowlayout,null);
+        infowindow = getLayoutInflater().inflate(R.layout.windowlayout, null);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setInfoWindowAdapter(new CustomInfoAdapter());
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -68,7 +84,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 try {
                     Intent i = new Intent(MapsActivity.this, MainActivity.class);
                     i.putExtra("id", Id.get(marker.getId()));
-                    i.putExtra("Nome",marker.getTitle());
+                    i.putExtra("Nome", marker.getTitle());
                     startActivity(i);
                 } catch (Exception e) {
                     Log.println(Log.ASSERT, "not exist", "elem non");
@@ -76,9 +92,77 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
             }
         });
-        t=(TextView)infowindow.findViewById(R.id.NomeLuogo);
-        img=(ImageView)infowindow.findViewById(R.id.imgMarker);
+
+        t = (TextView) infowindow.findViewById(R.id.NomeLuogo);
+        img = (ImageView) infowindow.findViewById(R.id.imgMarker);
+
+        //prova ricerca
+        et = (EditText) findViewById(R.id.EditText01);
+        lv = (ListView) findViewById(R.id.list);
+        array_sort = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, array_sort);
+        et.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                // Abstract Method of TextWatcher Interface.
+            }
+
+            public void beforeTextChanged(CharSequence s,
+                                          int start, int count, int after) {
+                // Abstract Method of TextWatcher Interface.
+            }
+
+            public void onTextChanged(CharSequence s,
+                                      int start, int before, int count) {
+                textlength = et.getText().length();
+                array_sort.clear();
+                associativo.clear();
+                int i=0;
+                if (dati.size() > 0) {
+
+                    for (PuntoSuMappa luoghi : dati) {
+
+                        if (textlength <= luoghi.nome_luogo.length()) {
+                            /***
+                             * If you choose the below block then it will act like a
+                             * Like operator in the Mysql
+                             */
+                            if (luoghi.nome_luogo.toLowerCase().contains(
+                                    et.getText().toString().toLowerCase().trim())) {
+                                array_sort.add(i,luoghi.nome_luogo);
+                                associativo.put(i,luoghi);
+                                i++;
+                            }
+                        }
+                    }
+                }
+                AppendList(array_sort);
+                if (et.getText().toString().matches("")) {
+                    array_sort.clear();
+                    associativo.clear();
+                    AppendList(array_sort);
+                }
+            }
+        });
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> arg0,
+                                    View arg1, int position, long arg3) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(associativo.get(position).latitudine,
+                        associativo.get(position).longitudine), 15));
+                array_sort.clear();
+                associativo.clear();
+                AppendList(array_sort);
+                et.setText("");
+            }
+        });
+
     }
+
+    public void AppendList(ArrayList<String> str) {
+        lv.setAdapter(adapter);
+    }
+
 
     class CustomInfoAdapter implements GoogleMap.InfoWindowAdapter {
         @Override
@@ -87,6 +171,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             img.setImageBitmap(immagine_marker.get(arg0.getId()));
             return infowindow;
         }
+
         @Override
         public View getInfoWindow(Marker arg0) {
             return null;
@@ -154,6 +239,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             io = mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(location.getLatitude(), location.getLongitude()))
                             .title("Sono qui")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.logo))
+
             );
         }
     };
@@ -182,6 +269,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             io = mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(location.getLatitude(), location.getLongitude()))
                             .title("Sono qui")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.logo))
             );
         }
     };
@@ -225,10 +313,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         mMap.setOnMarkerClickListener(this);
     }
 
-   @Override
+
+    @Override
     public boolean onMarkerClick(Marker marker) {
-       marker.showInfoWindow();
-      return true;
+        marker.showInfoWindow();
+        return true;
     }
 
     @Override
@@ -244,6 +333,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         public String nome_luogo;
         public String img;
     }
+
     public class CaricaMappe extends AsyncTask<String, Integer, String> {
 
         private StringBuffer chaine = new StringBuffer("");
@@ -310,17 +400,16 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             }
 
         }
-
-
     }
+
     private class DownloadImageTask extends AsyncTask<String, Void, String> {
 
 
         protected String doInBackground(String... params) {
             Bitmap mIcon11 = null;
             try {
-                for (PuntoSuMappa pe : dati){
-                    String elem = "http://www.ilpatibolo.it//" +  pe.img;
+                for (PuntoSuMappa pe : dati) {
+                    String elem = "http://www.ilpatibolo.it//" + pe.img;
                     InputStream in = new java.net.URL(elem).openStream();
                     mIcon11 = BitmapFactory.decodeStream(in);
                     immagine_marker.put(NuovoId.get(Integer.toString(pe.id)), mIcon11);
@@ -338,3 +427,4 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         }
     }
 }
+
