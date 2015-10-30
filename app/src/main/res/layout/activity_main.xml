@@ -1,0 +1,39 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/Nome"
+        android:textSize="20dp"
+        android:gravity="center"/>
+</LinearLayout>
+    <ImageSwitcher
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:id="@+id/imageSwitcher"
+        android:layout_centerHorizontal="true" />
+
+    <TextSwitcher
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/descr">
+    </TextSwitcher>
+    <TextSwitcher
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/datafoto">
+    </TextSwitcher>
+
+
+
+</LinearLayout>

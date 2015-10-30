@@ -1,0 +1,289 @@
+package com.hci2015.hciproject;
+
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextSwitcher;
+import android.widget.TextView;
+import android.widget.ViewSwitcher;
+import com.google.gson.Gson;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+
+public class MainActivity extends Activity implements View.OnClickListener {
+    private TextView te;
+    private ImageSwitcher sw;
+    private TextSwitcher descr;
+    private TextSwitcher date;
+    private GestureDetector gestureDetector;
+    private Animation inDaDes,inDaSin;
+    private int pos;
+    private String idest;
+    private List<Immagini> dati = new ArrayList<Immagini>();
+    private List<Drawable> immagini = new ArrayList<Drawable>();
+    private  List<String> textToShow = new ArrayList<String>();
+    private  List<String> dateToShow = new ArrayList<String>();
+    private Animation outDaDes,outDaSin;
+    View.OnTouchListener gestureListener;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Bundle datipassati = getIntent().getExtras();
+        idest = datipassati.getString("id");
+        sw = (ImageSwitcher) findViewById(R.id.imageSwitcher);
+        te=(TextView)findViewById(R.id.Nome);
+        descr=(TextSwitcher)findViewById(R.id.descr);
+        date=(TextSwitcher)findViewById(R.id.datafoto);
+        caricaImmagini ci = new caricaImmagini();
+        ci.execute();
+        te.setText(datipassati.getString("Nome"));
+        inDaDes = AnimationUtils.loadAnimation(this, R.anim.dadesasin);
+        inDaSin = AnimationUtils.loadAnimation(this, R.anim.dasinades);
+        outDaDes = AnimationUtils.loadAnimation(this, R.anim.outdasinades);
+        outDaSin = AnimationUtils.loadAnimation(this, R.anim.outdadesasin);
+        gestureDetector = new GestureDetector(this,new MyGestureDetector());
+        pos=0;
+        gestureListener= new View.OnTouchListener(){
+            public boolean onTouch(View v,MotionEvent event){
+                return gestureDetector.onTouchEvent(event);
+            }
+        };
+
+        sw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
+        descr.setFactory(new ViewSwitcher.ViewFactory() {
+
+            public View makeView() {
+                // TODO Auto-generated method stub
+                // create new textView and set the properties like clolr, size etc
+                TextView myText1 = new TextView(MainActivity.this);
+
+                myText1.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                myText1.setTextSize(15);
+                myText1.setTextColor(Color.BLUE);
+                return myText1;
+            }
+        });
+        date.setFactory(new ViewSwitcher.ViewFactory() {
+
+            public View makeView() {
+                // TODO Auto-generated method stub
+                // create new textView and set the properties like clolr, size etc
+                TextView myText = new TextView(MainActivity.this);
+                myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                myText.setTextSize(15);
+                myText.setTextColor(Color.BLUE);
+                return myText;
+            }
+        });
+
+        sw.setOnTouchListener(gestureListener);
+        sw.setFactory(new ViewSwitcher.ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView myView = new ImageView(getApplicationContext());
+                myView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                myView.setLayoutParams(new ImageSwitcher.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                return myView;
+            }
+        });
+    }
+
+
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                //float val = Math.abs(e1.getX()-e2.getX());
+
+                if(e1.getX()<e2.getX()){
+                    sw.setInAnimation(inDaDes);
+                    descr.setInAnimation(inDaDes);
+                    date.setInAnimation(inDaDes);
+                    sw.setOutAnimation(outDaDes);
+                    descr.setOutAnimation(outDaDes);
+                    date.setOutAnimation(outDaDes);
+                    sw.setImageDrawable(selIMG(1));
+                    descr.setText(selText());
+                    date.setText(selDate());
+                }
+                if(e1.getX()>e2.getX()){
+                    sw.setInAnimation(inDaSin);
+                    descr.setInAnimation(inDaSin);
+                    date.setInAnimation(inDaSin);
+                    sw.setOutAnimation(outDaSin);
+                    descr.setOutAnimation(outDaSin);
+                    date.setOutAnimation(outDaSin);
+                    sw.setImageDrawable(selIMG(0));
+                    descr.setText(selText());
+                    date.setText(selDate());
+                }
+            } catch (Exception e) {
+                // nothing
+            }
+            return false;
+        }
+    }
+    private Drawable selIMG(int dir){
+        if(dir==1){
+            pos=(pos+1)%immagini.size();
+
+        }
+        if(dir==0){
+            pos=(pos - 1)%immagini.size();
+        }
+        return immagini.get(Math.abs(pos));
+    }
+
+    private String selText(){
+        return textToShow.get(Math.abs(pos));
+    }
+
+    private String selDate(){
+        return dateToShow.get(Math.abs(pos));
+    }
+
+    public class Immagini{
+        public String Immagine;
+        public String Testo;
+        public String DataFoto;
+    }
+    public class caricaImmagini extends AsyncTask<String, Integer, String> {
+
+        private StringBuffer chaine = new StringBuffer("");
+
+
+
+        @Override
+        protected String doInBackground(String... sUrl) {
+            HttpURLConnection con;
+            InputStream fileIn;
+            OutputStream saveFl;
+            Gson gson = new Gson();
+
+            byte inp[] = new byte[2048];
+            int count;
+
+            try {
+                URL add = new URL("http://www.ilpatibolo.it//app/prelevaImmagini");
+                String daInviare = "id=" + idest;
+                con = (HttpURLConnection) add.openConnection();
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Length", "" + Integer.toString(daInviare.getBytes().length));
+                con.setDoInput(true);
+                con.setDoOutput(true);
+
+                DataOutputStream wr = new DataOutputStream(
+                        con.getOutputStream());
+                wr.writeBytes(daInviare);
+                wr.flush();
+                wr.close();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                    Reader r = new InputStreamReader(con.getInputStream());
+                    String line = "";
+                    dati = Arrays.asList(gson.fromJson(r, Immagini[].class));
+                    con.disconnect();
+
+                }else{
+                    Log.println(Log.ASSERT, "errore connessione",Integer.toString(con.getResponseCode()));
+
+                }
+
+            } catch (Exception ex) {
+                Log.println(Log.ERROR, "json", "Failed to parse JSON due to: " + ex);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            try {
+                new DownloadImageTask(sw)
+                        .execute();
+            } catch (Exception e) {
+                Log.println(Log.ERROR, "fail", "Errore : " + e);
+            }
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, String> {
+        ImageSwitcher bmImage;
+
+        public DownloadImageTask(ImageSwitcher bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected String doInBackground(String... params) {
+            List<Immagini>  url = dati;
+            Bitmap mIcon11 = null;
+            try {
+                for (Immagini pe : url){
+                    String elem = "http://www.ilpatibolo.it//" +  pe.Immagine;
+                    InputStream in = new java.net.URL(elem).openStream();
+                    mIcon11 = BitmapFactory.decodeStream(in);
+                    mIcon11.setDensity(Bitmap.DENSITY_NONE);
+                    Drawable d = new BitmapDrawable(mIcon11);
+                    immagini.add(d);
+                    textToShow.add(pe.Testo);
+                    String[] parts = pe.DataFoto.split("-");
+                    dateToShow.add(parts[2] + "/" + parts[1] + "/" + parts[0]);
+
+                }
+
+
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String str) {
+            pos=0;
+            bmImage.setImageDrawable(immagini.get(0));
+            descr.setText(textToShow.get(0));
+            date.setText(dateToShow.get(0));
+        }
+    }
+
+}
