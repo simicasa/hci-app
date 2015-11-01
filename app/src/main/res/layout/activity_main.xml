@@ -3,6 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
+    android:background="@drawable/sfondomain"
     >
 <LinearLayout
     android:layout_width="match_parent"
@@ -14,7 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/Nome"
-        android:textSize="20dp"
+        android:textColor="#ffffff"
+        android:textSize="25dp"
         android:gravity="center"/>
 </LinearLayout>
     <ImageSwitcher
@@ -22,17 +24,21 @@
         android:layout_height="250dp"
         android:id="@+id/imageSwitcher"
         android:layout_centerHorizontal="true" />
-
     <TextSwitcher
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/descr">
-    </TextSwitcher>
-    <TextSwitcher
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
         android:id="@+id/datafoto">
     </TextSwitcher>
+    <TextSwitcher
+        android:layout_width="match_parent"
+        android:paddingTop="20dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/descr">
+
+    </TextSwitcher>
+
 
 
 

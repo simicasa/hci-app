@@ -88,10 +88,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // TODO Auto-generated method stub
                 // create new textView and set the properties like clolr, size etc
                 TextView myText1 = new TextView(MainActivity.this);
-
-                myText1.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
                 myText1.setTextSize(15);
-                myText1.setTextColor(Color.BLUE);
+                myText1.setBackgroundResource(R.drawable.cornice);
+                ImageSwitcher.LayoutParams params = new ImageSwitcher.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                params.gravity = Gravity.CENTER;
+                myText1.setLayoutParams(params);
+                myText1.setPadding(30, 15, 30, 15);
+                myText1.setTextColor(Color.WHITE);
                 return myText1;
             }
         });
@@ -100,10 +104,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
             public View makeView() {
                 // TODO Auto-generated method stub
                 // create new textView and set the properties like clolr, size etc
+                ImageSwitcher.LayoutParams params = new ImageSwitcher.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                params.gravity = Gravity.CENTER;
                 TextView myText = new TextView(MainActivity.this);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                myText.setTextSize(15);
-                myText.setTextColor(Color.BLUE);
+                myText.setTextSize(9);
+                myText.setBackgroundResource(R.drawable.placca);
+                myText.setPadding(30, 15, 30, 15);
+                myText.setLayoutParams(params);
+                myText.setTextColor(Color.GRAY);
                 return myText;
             }
         });
@@ -114,6 +124,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             public View makeView() {
                 ImageView myView = new ImageView(getApplicationContext());
                 myView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                myView.setPadding(10, 10, 10, 10);
                 myView.setLayoutParams(new ImageSwitcher.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 return myView;
             }
