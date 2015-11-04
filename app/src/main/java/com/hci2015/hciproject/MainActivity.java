@@ -49,6 +49,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private  List<String> textToShow = new ArrayList<String>();
     private  List<String> dateToShow = new ArrayList<String>();
     private Animation outDaDes,outDaSin;
+    private Integer ris=0;
     View.OnTouchListener gestureListener;
 
     @Override
@@ -113,7 +114,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 myText.setBackgroundResource(R.drawable.placca);
                 myText.setPadding(30, 15, 30, 15);
                 myText.setLayoutParams(params);
-                myText.setTextColor(Color.GRAY);
+                myText.setTextColor(Color.DKGRAY);
                 return myText;
             }
         });
@@ -174,21 +175,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
     private Drawable selIMG(int dir){
         if(dir==1){
-            pos=(pos+1)%immagini.size();
+            pos=(pos+1);
 
         }
         if(dir==0){
-            pos=(pos - 1)%immagini.size();
+            pos=(pos - 1);
         }
-        return immagini.get(Math.abs(pos));
+        ris=pos%immagini.size();
+        ris=Math.abs(ris);
+        return immagini.get(ris);
     }
 
     private String selText(){
-        return textToShow.get(Math.abs(pos));
+        return textToShow.get(Math.abs(ris));
     }
 
     private String selDate(){
-        return dateToShow.get(Math.abs(pos));
+        return dateToShow.get(Math.abs(ris));
     }
 
     public class Immagini{

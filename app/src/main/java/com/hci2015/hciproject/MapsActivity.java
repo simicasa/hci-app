@@ -14,6 +14,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -60,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private Map<String, String> Id = new HashMap<String, String>();
     private Map<String, String> NuovoId = new HashMap<String, String>();
     private Map<String, Bitmap> immagine_marker = new HashMap<String, Bitmap>();
-    public Button b;
+    public Button locMy;
 
     //prova ricerca
     public EditText et;
@@ -82,10 +84,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             @Override
             public void onInfoWindowClick(Marker marker) {
                 try {
-                    Intent i = new Intent(MapsActivity.this, MainActivity.class);
-                    i.putExtra("id", Id.get(marker.getId()));
-                    i.putExtra("Nome", marker.getTitle());
-                    startActivity(i);
+                    if (!marker.getTitle().contentEquals("Sono qui")) {
+                        Intent i = new Intent(MapsActivity.this, MainActivity.class);
+                        i.putExtra("id", Id.get(marker.getId()));
+                        i.putExtra("Nome", marker.getTitle());
+                        startActivity(i);
+                    }
                 } catch (Exception e) {
                     Log.println(Log.ASSERT, "not exist", "elem non");
                 }
@@ -95,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         t = (TextView) infowindow.findViewById(R.id.NomeLuogo);
         img = (ImageView) infowindow.findViewById(R.id.imgMarker);
-
+        locMy = (Button) findViewById(R.id.dvS);
         //prova ricerca
         et = (EditText) findViewById(R.id.EditText01);
         lv = (ListView) findViewById(R.id.list);
@@ -113,10 +117,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
             public void onTextChanged(CharSequence s,
                                       int start, int before, int count) {
+                Log.println(Log.ASSERT, "textch", "test");
                 textlength = et.getText().length();
                 array_sort.clear();
                 associativo.clear();
-                int i=0;
+                int i = 0;
                 if (dati.size() > 0) {
 
                     for (PuntoSuMappa luoghi : dati) {
@@ -128,8 +133,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                              */
                             if (luoghi.nome_luogo.toLowerCase().contains(
                                     et.getText().toString().toLowerCase().trim())) {
-                                array_sort.add(i,luoghi.nome_luogo);
-                                associativo.put(i,luoghi);
+                                array_sort.add(i, luoghi.nome_luogo);
+                                associativo.put(i, luoghi);
                                 i++;
                             }
                         }
@@ -156,7 +161,14 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 et.setText("");
             }
         });
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+        locMy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(io.getPosition().latitude,io.getPosition().longitude), 15));
+            }
+        });
     }
 
     public void AppendList(ArrayList<String> str) {
