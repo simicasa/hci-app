@@ -95,6 +95,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER;
                 myText1.setLayoutParams(params);
+                myText1.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                 myText1.setPadding(30, 15, 30, 15);
                 myText1.setTextColor(Color.WHITE);
                 return myText1;
