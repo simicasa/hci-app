@@ -62,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private Map<String, String> Id = new HashMap<String, String>();
     private Map<String, String> NuovoId = new HashMap<String, String>();
     private Map<String, Bitmap> immagine_marker = new HashMap<String, Bitmap>();
-    public Button locMy;
+    public Button locMe;
 
     //prova ricerca
     public EditText et;
@@ -99,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         t = (TextView) infowindow.findViewById(R.id.NomeLuogo);
         img = (ImageView) infowindow.findViewById(R.id.imgMarker);
-        locMy = (Button) findViewById(R.id.dvS);
+        locMe = (Button) findViewById(R.id.dvS);
         //prova ricerca
         et = (EditText) findViewById(R.id.EditText01);
         lv = (ListView) findViewById(R.id.list);
@@ -117,7 +117,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
             public void onTextChanged(CharSequence s,
                                       int start, int before, int count) {
-                Log.println(Log.ASSERT, "textch", "test");
                 textlength = et.getText().length();
                 array_sort.clear();
                 associativo.clear();
@@ -163,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         });
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        locMy.setOnClickListener(new View.OnClickListener() {
+        locMe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(io.getPosition().latitude,io.getPosition().longitude), 15));
