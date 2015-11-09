@@ -62,9 +62,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private Map<String, String> Id = new HashMap<String, String>();
     private Map<String, String> NuovoId = new HashMap<String, String>();
     private Map<String, Bitmap> immagine_marker = new HashMap<String, Bitmap>();
-    public Button locMe;
-
-    //prova ricerca
+    //ricerca
     public EditText et;
     public ListView lv;
     public ArrayList<String> array_sort;
@@ -79,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         setUpMapIfNeeded();
         infowindow = getLayoutInflater().inflate(R.layout.windowlayout, null);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.setMyLocationEnabled(true);
         mMap.setInfoWindowAdapter(new CustomInfoAdapter());
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -99,7 +98,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         t = (TextView) infowindow.findViewById(R.id.NomeLuogo);
         img = (ImageView) infowindow.findViewById(R.id.imgMarker);
-        locMe = (Button) findViewById(R.id.dvS);
         //prova ricerca
         et = (EditText) findViewById(R.id.EditText01);
         lv = (ListView) findViewById(R.id.list);
@@ -158,16 +156,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 associativo.clear();
                 AppendList(array_sort);
                 et.setText("");
-            }
-        });
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        locMe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(io.getPosition().latitude,io.getPosition().longitude), 15));
             }
         });
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     public void AppendList(ArrayList<String> str) {
@@ -216,7 +209,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         } else {
             locationManager.requestLocationUpdates(providerId, MIN_PERIOD, MIN_DIST, this.locationListener);
         }
-
     }
 
     @Override
@@ -244,7 +236,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         @Override
         public void onLocationChanged(Location location) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 18));
-            if (io != null) {
+           /* if (io != null) {
                 io.remove();
             }
             io = mMap.addMarker(new MarkerOptions()
@@ -252,7 +244,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                             .title("Sono qui")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.logo))
 
-            );
+            );*/
         }
     };
 
@@ -274,14 +266,14 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         @Override
         public void onLocationChanged(Location location) {
-            if (io != null) {
+          /* if (io != null) {
                 io.remove();
             }
             io = mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(location.getLatitude(), location.getLongitude()))
                             .title("Sono qui")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.logo))
-            );
+            );*/
         }
     };
 
