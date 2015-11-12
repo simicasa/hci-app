@@ -11,8 +11,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/icon2"
-        android:label="@string/app_name"
+        android:icon="@drawable/logo"
+        android:label="WTP"
         android:theme="@style/AppTheme" >
         <meta-data
             android:name="com.google.android.gms.version"
@@ -39,6 +39,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
+            android:screenOrientation="portrait" >
             >
         </activity>
     </application>

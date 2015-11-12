@@ -2,6 +2,10 @@ package com.hci2015.hciproject;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -12,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -50,6 +55,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private  List<String> dateToShow = new ArrayList<String>();
     private Animation outDaDes,outDaSin;
     private Integer ris=0;
+    private TextView testoArea;
+    private DialogFragment newFragment;
     View.OnTouchListener gestureListener;
 
     @Override
@@ -62,6 +69,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         te=(TextView)findViewById(R.id.Nome);
         descr=(TextSwitcher)findViewById(R.id.descr);
         date=(TextSwitcher)findViewById(R.id.datafoto);
+
         caricaImmagini ci = new caricaImmagini();
         ci.execute();
         te.setText(datipassati.getString("Nome"));
@@ -90,14 +98,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // create new textView and set the properties like clolr, size etc
                 TextView myText1 = new TextView(MainActivity.this);
                 myText1.setTextSize(15);
-                myText1.setBackgroundResource(R.drawable.cornice);
                 ImageSwitcher.LayoutParams params = new ImageSwitcher.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER;
                 myText1.setLayoutParams(params);
+                myText1.setBackgroundResource(R.drawable.placca);
                 myText1.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                 myText1.setPadding(30, 15, 30, 15);
-                myText1.setTextColor(Color.WHITE);
+                myText1.setTextColor(Color.parseColor("#004962"));
                 return myText1;
             }
         });
@@ -111,11 +119,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 params.gravity = Gravity.CENTER;
                 TextView myText = new TextView(MainActivity.this);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                myText.setTextSize(9);
+                myText.setTextSize(13);
                 myText.setBackgroundResource(R.drawable.placca);
                 myText.setPadding(30, 15, 30, 15);
                 myText.setLayoutParams(params);
-                myText.setTextColor(Color.DKGRAY);
+                myText.setTextColor(Color.parseColor("#004962"));
                 return myText;
             }
         });
@@ -204,7 +212,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         private StringBuffer chaine = new StringBuffer("");
 
-
+        @Override
+        protected void onPreExecute(){
+            newFragment = new attDialog();
+            newFragment.setCancelable(false);
+            newFragment.show(getFragmentManager(), "Attendi");
+        }
 
         @Override
         protected String doInBackground(String... sUrl) {
@@ -251,7 +264,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(String result) {
-
+            testoArea.setText("download 0/" + dati.size());
             try {
                 new DownloadImageTask(sw)
                         .execute();
@@ -261,7 +274,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, String> {
+    private class DownloadImageTask extends AsyncTask<String, String, String> {
         ImageSwitcher bmImage;
 
         public DownloadImageTask(ImageSwitcher bmImage) {
@@ -271,6 +284,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         protected String doInBackground(String... params) {
             List<Immagini>  url = dati;
             Bitmap mIcon11 = null;
+            int nelem=0;
             try {
                 for (Immagini pe : url){
                     String elem = "http://www.ilpatibolo.it//" +  pe.Immagine;
@@ -282,7 +296,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     textToShow.add(pe.Testo);
                     String[] parts = pe.DataFoto.split("-");
                     dateToShow.add(parts[2] + "/" + parts[1] + "/" + parts[0]);
-
+                    nelem=nelem+1;
+                    publishProgress("" + immagini.size());
                 }
 
 
@@ -292,12 +307,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
             return null;
         }
-
+        protected void onProgressUpdate(String... progress) {
+            testoArea.setText("download" + progress[0]  + "/" + dati.size());
+        }
         protected void onPostExecute(String str) {
             pos=0;
             bmImage.setImageDrawable(immagini.get(0));
             descr.setText(textToShow.get(0));
             date.setText(dateToShow.get(0));
+            newFragment.dismiss();
+        }
+    }
+    public class attDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            View v = getLayoutInflater().inflate(R.layout.dialogatt, null);
+            builder.setView(v);
+            testoArea = (TextView) (v.findViewById(R.id.testAtt));
+            return builder.create();
         }
     }
 

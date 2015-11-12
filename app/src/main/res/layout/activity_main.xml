@@ -2,12 +2,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="#e2e2e2"
     android:orientation="vertical"
-    android:background="@drawable/sfondomain"
     >
+
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
+    android:background="#004962"
     android:orientation="horizontal"
     android:gravity="center">
 
@@ -16,7 +18,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/Nome"
         android:textColor="#ffffff"
-        android:textSize="25dp"
+        android:textSize="20dp"
         android:gravity="center"/>
 </LinearLayout>
     <ImageSwitcher
@@ -38,8 +40,5 @@
         android:id="@+id/descr">
 
     </TextSwitcher>
-
-
-
 
 </LinearLayout>
