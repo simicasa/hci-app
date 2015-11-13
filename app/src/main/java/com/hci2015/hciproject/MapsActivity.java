@@ -3,6 +3,7 @@ package com.hci2015.hciproject;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -97,9 +98,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         });
 
         t = (TextView) infowindow.findViewById(R.id.NomeLuogo);
+        t.setTextSize(15);
+        t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/test5.ttf"));
         img = (ImageView) infowindow.findViewById(R.id.imgMarker);
         //prova ricerca
         et = (EditText) findViewById(R.id.EditText01);
+        et.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/test2.ttf"));
         lv = (ListView) findViewById(R.id.list);
         array_sort = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, array_sort);

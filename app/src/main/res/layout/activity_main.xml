@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/Nome"
         android:textColor="#ffffff"
-        android:textSize="20dp"
+        android:textSize="18dp"
         android:gravity="center"/>
 </LinearLayout>
     <ImageSwitcher

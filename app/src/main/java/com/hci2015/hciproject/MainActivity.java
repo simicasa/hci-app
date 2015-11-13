@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -73,6 +74,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         caricaImmagini ci = new caricaImmagini();
         ci.execute();
         te.setText(datipassati.getString("Nome"));
+        te.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/AllerDisplay.ttf"));
         inDaDes = AnimationUtils.loadAnimation(this, R.anim.dadesasin);
         inDaSin = AnimationUtils.loadAnimation(this, R.anim.dasinades);
         outDaDes = AnimationUtils.loadAnimation(this, R.anim.outdasinades);
@@ -97,7 +99,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // TODO Auto-generated method stub
                 // create new textView and set the properties like clolr, size etc
                 TextView myText1 = new TextView(MainActivity.this);
-                myText1.setTextSize(15);
+                myText1.setTextSize(14);
                 ImageSwitcher.LayoutParams params = new ImageSwitcher.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER;
@@ -106,6 +108,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 myText1.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                 myText1.setPadding(30, 15, 30, 15);
                 myText1.setTextColor(Color.parseColor("#004962"));
+                myText1.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/test2.ttf"));
                 return myText1;
             }
         });
@@ -119,11 +122,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 params.gravity = Gravity.CENTER;
                 TextView myText = new TextView(MainActivity.this);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                myText.setTextSize(13);
+                myText.setTextSize(14);
                 myText.setBackgroundResource(R.drawable.placca);
                 myText.setPadding(30, 15, 30, 15);
                 myText.setLayoutParams(params);
                 myText.setTextColor(Color.parseColor("#004962"));
+                myText.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/test2.ttf"));
                 return myText;
             }
         });
