@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,14 +60,35 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private  List<String> dateToShow = new ArrayList<String>();
     private Animation outDaDes,outDaSin;
     private Integer ris=0;
+    private ImageView frecciaS,frecciaD;
     private TextView testoArea;
     private DialogFragment newFragment;
+    private Typeface type;
     View.OnTouchListener gestureListener;
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(!isOnline()){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Attenzione l'app richiede una connessione ad internet")
+                    .setPositiveButton("reset", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            recreate();
+                        }
+                    });
+            builder.create().show();
+            return ;
+        }
         Bundle datipassati = getIntent().getExtras();
         idest = datipassati.getString("id");
         sw = (ImageSwitcher) findViewById(R.id.imageSwitcher);
@@ -72,11 +96,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
         descr=(TextSwitcher)findViewById(R.id.descr);
         date=(TextSwitcher)findViewById(R.id.datafoto);
         numImg = (TextView) findViewById(R.id.NumImm);
+        frecciaD = (ImageView) findViewById(R.id.frecciaDes);
+        frecciaS = (ImageView) findViewById(R.id.frecciaSin);
+        type = Typeface.createFromAsset(getAssets(), "fonts/AllerDisplay.ttf");
+        numImg.setTypeface(type);
 
         caricaImmagini ci = new caricaImmagini();
         ci.execute();
         te.setText(datipassati.getString("Nome"));
-        te.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/AllerDisplay.ttf"));
+        te.setTypeface(type);
         inDaDes = AnimationUtils.loadAnimation(this, R.anim.dadesasin);
         inDaSin = AnimationUtils.loadAnimation(this, R.anim.dasinades);
         outDaDes = AnimationUtils.loadAnimation(this, R.anim.outdasinades);
@@ -133,7 +161,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 return myText;
             }
         });
-
+        frecciaS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RuotaD();
+            }
+        });
+        frecciaD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RuotaS();
+            }
+        });
         sw.setOnTouchListener(gestureListener);
         sw.setFactory(new ViewSwitcher.ViewFactory() {
             @Override
@@ -161,32 +200,38 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 //float val = Math.abs(e1.getX()-e2.getX());
 
                 if(e1.getX()<e2.getX()){
-                    sw.setInAnimation(inDaDes);
-                    descr.setInAnimation(inDaDes);
-                    date.setInAnimation(inDaDes);
-                    sw.setOutAnimation(outDaDes);
-                    descr.setOutAnimation(outDaDes);
-                    date.setOutAnimation(outDaDes);
-                    sw.setImageDrawable(selIMG(1));
-                    descr.setText(selText());
-                    date.setText(selDate());
+                    RuotaD();
                 }
                 if(e1.getX()>e2.getX()){
-                    sw.setInAnimation(inDaSin);
-                    descr.setInAnimation(inDaSin);
-                    date.setInAnimation(inDaSin);
-                    sw.setOutAnimation(outDaSin);
-                    descr.setOutAnimation(outDaSin);
-                    date.setOutAnimation(outDaSin);
-                    sw.setImageDrawable(selIMG(0));
-                    descr.setText(selText());
-                    date.setText(selDate());
+                    RuotaS();
                 }
             } catch (Exception e) {
                 // nothing
             }
             return false;
         }
+    }
+    private void RuotaD(){
+        sw.setInAnimation(inDaDes);
+        descr.setInAnimation(inDaDes);
+        date.setInAnimation(inDaDes);
+        sw.setOutAnimation(outDaDes);
+        descr.setOutAnimation(outDaDes);
+        date.setOutAnimation(outDaDes);
+        sw.setImageDrawable(selIMG(1));
+        descr.setText(selText());
+        date.setText(selDate());
+    }
+    private void RuotaS(){
+        sw.setInAnimation(inDaSin);
+        descr.setInAnimation(inDaSin);
+        date.setInAnimation(inDaSin);
+        sw.setOutAnimation(outDaSin);
+        descr.setOutAnimation(outDaSin);
+        date.setOutAnimation(outDaSin);
+        sw.setImageDrawable(selIMG(0));
+        descr.setText(selText());
+        date.setText(selDate());
     }
     private Drawable selIMG(int dir){
         if(dir==1){
@@ -315,7 +360,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             return null;
         }
         protected void onProgressUpdate(String... progress) {
-            testoArea.setText("download" + progress[0]  + "/" + dati.size());
+            testoArea.setText("download immagini " + progress[0]  + "/" + dati.size());
         }
         protected void onPostExecute(String str) {
             pos=0;

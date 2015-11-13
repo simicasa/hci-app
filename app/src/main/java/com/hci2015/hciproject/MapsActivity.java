@@ -1,5 +1,6 @@
 package com.hci2015.hciproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -160,6 +161,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 associativo.clear();
                 AppendList(array_sort);
                 et.setText("");
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+
 
             }
         });

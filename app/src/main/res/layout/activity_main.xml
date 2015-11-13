@@ -1,7 +1,11 @@
+<RelativeLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@+id/main"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="#e2e2e2"
     android:orientation="vertical"
     >
@@ -26,13 +30,7 @@
         android:layout_height="250dp"
         android:id="@+id/imageSwitcher"
         android:layout_centerHorizontal="true" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/NumImm"
-        android:textSize="13dp"
-        android:gravity="center"/>
-    />
+
     <TextSwitcher
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,4 +46,36 @@
 
     </TextSwitcher>
 
+
 </LinearLayout>
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#FF004962"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/fs"
+            android:id="@+id/frecciaSin" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/NumImm"
+            android:textColor="#ffffff"
+            android:textSize="20dp"/>
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/fd"
+            android:layout_gravity="right"
+            android:id="@+id/frecciaDes"/>
+    </RelativeLayout>
+</RelativeLayout>

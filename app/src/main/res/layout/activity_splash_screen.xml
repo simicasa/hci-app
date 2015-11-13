@@ -19,6 +19,6 @@
         android:textColor="#5f8dd3"
         android:typeface="serif"
         android:textSize="30dp"
-        android:text="World Though Photos"
+        android:text="World Through Photos"
         />
 </LinearLayout>

@@ -13,7 +13,13 @@
             android:id="@+id/EditText01"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
-            android:hint="search"/>
+            android:textColor="#ffff"
+            android:background="#004962"
+            android:textSize="20dp"
+            android:height="40dp"
+            android:textColorHint="#ffffff"
+            android:paddingLeft="5dp"
+            android:hint="Search"/>
     </LinearLayout>
 
 

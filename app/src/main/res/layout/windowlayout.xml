@@ -8,8 +8,7 @@
     android:layout_width="100dp"
     android:layout_height="100dp"
     android:layout_marginRight="5dp"
-    android:id="@+id/imgMarker"
-    android:src="@drawable/palla1"/>
+    android:id="@+id/imgMarker"/>
 <LinearLayout
     android:layout_width="120dp"
     android:layout_height="match_parent"
