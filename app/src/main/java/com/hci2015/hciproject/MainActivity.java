@@ -43,6 +43,7 @@ import java.util.List;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private TextView te;
+    private TextView numImg;
     private ImageSwitcher sw;
     private TextSwitcher descr;
     private TextSwitcher date;
@@ -70,6 +71,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         te=(TextView)findViewById(R.id.Nome);
         descr=(TextSwitcher)findViewById(R.id.descr);
         date=(TextSwitcher)findViewById(R.id.datafoto);
+        numImg = (TextView) findViewById(R.id.NumImm);
 
         caricaImmagini ci = new caricaImmagini();
         ci.execute();
@@ -101,14 +103,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 TextView myText1 = new TextView(MainActivity.this);
                 myText1.setTextSize(14);
                 ImageSwitcher.LayoutParams params = new ImageSwitcher.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER;
                 myText1.setLayoutParams(params);
                 myText1.setBackgroundResource(R.drawable.placca);
                 myText1.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                 myText1.setPadding(30, 15, 30, 15);
                 myText1.setTextColor(Color.parseColor("#004962"));
-                myText1.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/test2.ttf"));
+                myText1.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/test2.ttf"));
                 return myText1;
             }
         });
@@ -118,7 +120,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // TODO Auto-generated method stub
                 // create new textView and set the properties like clolr, size etc
                 ImageSwitcher.LayoutParams params = new ImageSwitcher.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER;
                 TextView myText = new TextView(MainActivity.this);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
@@ -127,7 +129,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 myText.setPadding(30, 15, 30, 15);
                 myText.setLayoutParams(params);
                 myText.setTextColor(Color.parseColor("#004962"));
-                myText.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/test2.ttf"));
+                myText.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/test2.ttf"));
                 return myText;
             }
         });
@@ -188,23 +190,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
     private Drawable selIMG(int dir){
         if(dir==1){
-            pos=(pos+1);
+            pos=(pos-1);
 
         }
         if(dir==0){
-            pos=(pos - 1);
+            pos=(pos + 1);
         }
-        ris=pos%immagini.size();
-        ris=Math.abs(ris);
-        return immagini.get(ris);
+        if(pos<0)pos=immagini.size()+pos;
+        pos=pos%immagini.size();
+        numImg.setText((pos + 1) + "/" + dati.size());
+        return immagini.get(pos);
     }
 
     private String selText(){
-        return textToShow.get(Math.abs(ris));
+        return textToShow.get(pos);
     }
 
     private String selDate(){
-        return dateToShow.get(Math.abs(ris));
+        return dateToShow.get(pos);
     }
 
     public class Immagini{
@@ -316,6 +319,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
         protected void onPostExecute(String str) {
             pos=0;
+            numImg.setText("1/" + dati.size());
             bmImage.setImageDrawable(immagini.get(0));
             descr.setText(textToShow.get(0));
             date.setText(dateToShow.get(0));

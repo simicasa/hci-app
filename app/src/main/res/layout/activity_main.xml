@@ -26,6 +26,13 @@
         android:layout_height="250dp"
         android:id="@+id/imageSwitcher"
         android:layout_centerHorizontal="true" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/NumImm"
+        android:textSize="13dp"
+        android:gravity="center"/>
+    />
     <TextSwitcher
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
