@@ -17,7 +17,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -129,7 +131,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // TODO Auto-generated method stub
                 // create new textView and set the properties like clolr, size etc
                 TextView myText1 = new TextView(MainActivity.this);
-                myText1.setTextSize(14);
+                myText1.setTextSize(TypedValue.COMPLEX_UNIT_DIP,14);
+                myText1.setMaxLines(5);
+                myText1.setMovementMethod(new ScrollingMovementMethod());
                 ImageSwitcher.LayoutParams params = new ImageSwitcher.LayoutParams(
                         LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER;

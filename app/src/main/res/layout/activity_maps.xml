@@ -17,9 +17,14 @@
             android:background="#004962"
             android:textSize="20dp"
             android:height="40dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:textColorHint="#ffffff"
             android:paddingLeft="5dp"
-            android:hint="Search"/>
+            android:hint="Search"
+            android:imeOptions="actionNone"
+            android:inputType="text"/>
+
     </LinearLayout>
 
 
