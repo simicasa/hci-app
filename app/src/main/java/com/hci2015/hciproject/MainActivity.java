@@ -176,6 +176,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 RuotaS();
             }
         });
+
         sw.setOnTouchListener(gestureListener);
         sw.setFactory(new ViewSwitcher.ViewFactory() {
             @Override
@@ -200,43 +201,50 @@ public class MainActivity extends Activity implements View.OnClickListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
+                    if (e1.getX() < e2.getX()) {
+                        RuotaD();
+                    }
+                    if (e1.getX() > e2.getX()) {
+                        RuotaS();
+                    }
 
-
-                if(e1.getX()<e2.getX()){
-                    RuotaD();
-                }
-                if(e1.getX()>e2.getX()){
-                    RuotaS();
-                }
             } catch (Exception e) {
                 // nothing
             }
             return false;
         }
     }
+
     private void RuotaD(){
-        sw.setInAnimation(inDaDes);
-        descr.setInAnimation(inDaDes);
-        date.setInAnimation(inDaDes);
-        sw.setOutAnimation(outDaDes);
-        descr.setOutAnimation(outDaDes);
-        date.setOutAnimation(outDaDes);
-        sw.setImageDrawable(selIMG(1));
-        descr.setText(selText());
-        date.setText(selDate());
+        if(immagini.size()>1) {
+            sw.setInAnimation(inDaDes);
+            descr.setInAnimation(inDaDes);
+            date.setInAnimation(inDaDes);
+            sw.setOutAnimation(outDaDes);
+            descr.setOutAnimation(outDaDes);
+            date.setOutAnimation(outDaDes);
+            sw.setImageDrawable(selIMG(1));
+            descr.setText(selText());
+            date.setText(selDate());
+        }
+
     }
     private void RuotaS(){
-        sw.setInAnimation(inDaSin);
-        descr.setInAnimation(inDaSin);
-        date.setInAnimation(inDaSin);
-        sw.setOutAnimation(outDaSin);
-        descr.setOutAnimation(outDaSin);
-        date.setOutAnimation(outDaSin);
-        sw.setImageDrawable(selIMG(0));
-        descr.setText(selText());
-        date.setText(selDate());
+        if(immagini.size()>1) {
+            sw.setInAnimation(inDaSin);
+            descr.setInAnimation(inDaSin);
+            date.setInAnimation(inDaSin);
+            sw.setOutAnimation(outDaSin);
+            descr.setOutAnimation(outDaSin);
+            date.setOutAnimation(outDaSin);
+            sw.setImageDrawable(selIMG(0));
+            descr.setText(selText());
+            date.setText(selDate());
+        }
+
     }
     private Drawable selIMG(int dir){
+
         if(dir==1){
             pos=(pos-1);
 
@@ -371,7 +379,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
             bmImage.setImageDrawable(immagini.get(0));
             descr.setText(textToShow.get(0));
             date.setText(dateToShow.get(0));
+            //Se vi è un'unica immagine scaricata setto invisible le freccie dello slider
+            if(immagini.size()==1){
+                frecciaD.setVisibility(View.INVISIBLE);
+                frecciaS.setVisibility(View.INVISIBLE);
+            }
             newFragment.dismiss();
+
         }
     }
     public class attDialog extends DialogFragment {

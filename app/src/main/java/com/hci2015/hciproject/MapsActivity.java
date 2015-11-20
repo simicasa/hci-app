@@ -119,10 +119,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
-        Log.println(Log.ASSERT, "prova ", "pippo1");
         //Settaggio per la guida di introduzione
         setImages();
-        Log.println(Log.ASSERT, "prova ", "pippo2");
         v = getLayoutInflater().inflate(R.layout.guida_app, null);
         closeDialog=(Button)(v.findViewById(R.id.Close));
         ImgGuida=(ImageSwitcher)(v.findViewById(R.id.ImgGuida));
@@ -144,14 +142,14 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             public void onClick(View v) {
             }
         });
-        Log.println(Log.ASSERT, "prova ", "pippo3");
+
         frecciaS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RuotaD();
             }
         });
-        Log.println(Log.ASSERT, "prova ", "pippo4");
+
         frecciaD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,7 +162,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 guidaIntro.dismiss();
             }
         });
-        Log.println(Log.ASSERT, "prova ", "pippo5");
         ImgGuida.setOnTouchListener(gestureListener);
         ImgGuida.setFactory(new ViewSwitcher.ViewFactory() {
             @Override
@@ -178,10 +175,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             }
         });
         frecciaS.setVisibility(View.INVISIBLE);
-        Log.println(Log.ASSERT, "prova ", "pippo6");
         checkFirstRun();
-        Log.println(Log.ASSERT, "prova ", "pippo7");
-        //Setaggio e abilitazione bottone di geolocalizzazione
+        //Settaggio e abilitazione bottone di geolocalizzazione
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setMyLocationEnabled(true);
         //Settaggio dell'infoWindow
@@ -593,14 +588,18 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
 
     private void RuotaD(){
-        ImgGuida.setInAnimation(inDaDes);
-        ImgGuida.setOutAnimation(outDaDes);
-        ImgGuida.setImageResource(selIMG(1));
+        if(pos!=0) {
+            ImgGuida.setInAnimation(inDaDes);
+            ImgGuida.setOutAnimation(outDaDes);
+            ImgGuida.setImageResource(selIMG(1));
+        }
     }
     private void RuotaS(){
-        ImgGuida.setInAnimation(inDaSin);
-        ImgGuida.setOutAnimation(outDaSin);
-        ImgGuida.setImageResource(selIMG(0));
+        if(pos!=3) {
+            ImgGuida.setInAnimation(inDaSin);
+            ImgGuida.setOutAnimation(outDaSin);
+            ImgGuida.setImageResource(selIMG(0));
+        }
     }
     private int selIMG(int dir){
         if(dir==1){
@@ -635,17 +634,19 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         IMGS[3] = R.drawable.fs;
 
     }
+
     class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
-
-
                 if(e1.getX()<e2.getX()){
-                    RuotaD();
+                        RuotaD();
+
                 }
                 if(e1.getX()>e2.getX()){
-                    RuotaS();
+
+                        RuotaS();
+
                 }
             } catch (Exception e) {
                 // nothing

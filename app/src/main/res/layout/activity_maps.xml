@@ -24,9 +24,7 @@
             android:hint="Search"
             android:imeOptions="actionNone"
             android:inputType="text"/>
-
     </LinearLayout>
-
 
     <ListView
         android:id="@+id/list"
