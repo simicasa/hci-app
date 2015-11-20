@@ -1,12 +1,16 @@
 package com.hci2015.hciproject;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,18 +20,27 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
+
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.gson.Gson;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +63,16 @@ import java.util.List;
 import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
+    private DialogFragment guidaIntro;
+    private ImageSwitcher ImgGuida;
+    private int[] IMGS;
+    private int pos;
+    private ImageView frecciaS,frecciaD;
+    private View v;
+    private Animation inDaDes,inDaSin,outDaDes,outDaSin;
+    private GestureDetector gestureDetector;
+    private Button closeDialog;
+    View.OnTouchListener gestureListener;
     //Mappa
     private GoogleMap mMap;
     //Coordinate iniziali
@@ -89,7 +112,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private ArrayAdapter<String> adapter;
     //Array associativo usato per associare la posizione di un elemento nella lista con un luogo
     private Map<Integer,PuntoSuMappa>associativo=new HashMap<Integer,PuntoSuMappa>();
-
     private Marker selezionato;
 
     @Override
@@ -97,6 +119,68 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+        Log.println(Log.ASSERT, "prova ", "pippo1");
+        //Settaggio per la guida di introduzione
+        setImages();
+        Log.println(Log.ASSERT, "prova ", "pippo2");
+        v = getLayoutInflater().inflate(R.layout.guida_app, null);
+        closeDialog=(Button)(v.findViewById(R.id.Close));
+        ImgGuida=(ImageSwitcher)(v.findViewById(R.id.ImgGuida));
+        frecciaD = (ImageView)(v.findViewById(R.id.frecciaDx));
+        frecciaS = (ImageView)(v.findViewById(R.id.frecciaSx));
+        inDaDes = AnimationUtils.loadAnimation(this, R.anim.dadesasin);
+        inDaSin = AnimationUtils.loadAnimation(this, R.anim.dasinades);
+        outDaDes = AnimationUtils.loadAnimation(this, R.anim.outdasinades);
+        outDaSin = AnimationUtils.loadAnimation(this, R.anim.outdadesasin);
+        gestureDetector = new GestureDetector(this,new MyGestureDetector());
+        pos=0;
+        gestureListener= new View.OnTouchListener(){
+            public boolean onTouch(View v,MotionEvent event){
+                return gestureDetector.onTouchEvent(event);
+            }
+        };
+        ImgGuida.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        Log.println(Log.ASSERT, "prova ", "pippo3");
+        frecciaS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RuotaD();
+            }
+        });
+        Log.println(Log.ASSERT, "prova ", "pippo4");
+        frecciaD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RuotaS();
+            }
+        });
+        closeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                guidaIntro.dismiss();
+            }
+        });
+        Log.println(Log.ASSERT, "prova ", "pippo5");
+        ImgGuida.setOnTouchListener(gestureListener);
+        ImgGuida.setFactory(new ViewSwitcher.ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView myView = new ImageView(getApplicationContext());
+                myView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                myView.setPadding(10, 10, 10, 10);
+                myView.setLayoutParams(new ImageSwitcher.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
+                myView.setImageResource(IMGS[0]);
+                return myView;
+            }
+        });
+        frecciaS.setVisibility(View.INVISIBLE);
+        Log.println(Log.ASSERT, "prova ", "pippo6");
+        checkFirstRun();
+        Log.println(Log.ASSERT, "prova ", "pippo7");
         //Setaggio e abilitazione bottone di geolocalizzazione
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setMyLocationEnabled(true);
@@ -144,6 +228,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                                           int start, int count, int after) {
                 // Abstract Method of TextWatcher Interface.
             }
+
             public void onTextChanged(CharSequence s,
                                       int start, int before, int count) {
                 //Lunghezza del testo inserito nell'editText
@@ -214,6 +299,22 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
+
+
+    public void checkFirstRun() {
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
+        if (isFirstRun){
+            guidaIntro = new GuidaApp();
+            guidaIntro.setCancelable(false);
+            guidaIntro.show(getFragmentManager(), "Prova");
+
+            getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("isFirstRun", false)
+                    .apply();
+        }
+    }
+
 
     public void AppendList(ArrayList<String> str) {
         lv.setAdapter(adapter);
@@ -485,6 +586,80 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         }
 
         protected void onPostExecute(String str) {
+        }
+    }
+
+
+
+
+    private void RuotaD(){
+        ImgGuida.setInAnimation(inDaDes);
+        ImgGuida.setOutAnimation(outDaDes);
+        ImgGuida.setImageResource(selIMG(1));
+    }
+    private void RuotaS(){
+        ImgGuida.setInAnimation(inDaSin);
+        ImgGuida.setOutAnimation(outDaSin);
+        ImgGuida.setImageResource(selIMG(0));
+    }
+    private int selIMG(int dir){
+        if(dir==1){
+            pos=(pos-1);
+
+        }
+        if(dir==0){
+            pos=(pos + 1);
+        }
+        if(pos<0) pos=IMGS.length+pos;
+
+        if(pos==3)
+            frecciaD.setVisibility(View.INVISIBLE);
+        else
+            frecciaD.setVisibility(View.VISIBLE);
+
+        if(pos==0)
+            frecciaS.setVisibility(View.INVISIBLE);
+        else
+            frecciaS.setVisibility(View.VISIBLE);
+
+        pos=pos%IMGS.length;
+        return IMGS[pos];
+    }
+
+    private void setImages() {
+
+        IMGS = new int[4];
+        IMGS[0] = R.drawable.fd;
+        IMGS[1] = R.drawable.fs;
+        IMGS[2] = R.drawable.fd;
+        IMGS[3] = R.drawable.fs;
+
+    }
+    class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+
+
+                if(e1.getX()<e2.getX()){
+                    RuotaD();
+                }
+                if(e1.getX()>e2.getX()){
+                    RuotaS();
+                }
+            } catch (Exception e) {
+                // nothing
+            }
+            return false;
+        }
+    }
+    public class GuidaApp extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setView(v);
+            return builder.create();
         }
     }
 }

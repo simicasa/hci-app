@@ -61,7 +61,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private  List<String> textToShow = new ArrayList<String>();
     private  List<String> dateToShow = new ArrayList<String>();
     private Animation outDaDes,outDaSin;
-    private Integer ris=0;
     private ImageView frecciaS,frecciaD;
     private TextView testoArea;
     private DialogFragment newFragment;
@@ -201,7 +200,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
-                //float val = Math.abs(e1.getX()-e2.getX());
+
 
                 if(e1.getX()<e2.getX()){
                     RuotaD();
