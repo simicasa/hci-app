@@ -22,7 +22,7 @@
             android:textColorHint="#ffffff"
             android:paddingLeft="5dp"
             android:hint="Search"
-            android:imeOptions="actionNone"
+            android:imeOptions="actionSearch"
             android:inputType="text"/>
     </LinearLayout>
 

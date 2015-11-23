@@ -21,6 +21,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,6 +40,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -61,6 +63,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.LoggingPermission;
 
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
     private DialogFragment guidaIntro;
@@ -107,7 +110,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     //Array list in cui vengono salvati gli elementi della ricerca
     private ArrayList<String> array_sort;
     //Lunghezza iniziale del testo della ricerca
-    int textlength = 0;
+    private int textlength = 0;
+    private int i;
     //ArrayAdapter permette di associare i dati della lista con il layout della lista stessa
     private ArrayAdapter<String> adapter;
     //Array associativo usato per associare la posizione di un elemento nella lista con un luogo
@@ -149,7 +153,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 RuotaD();
             }
         });
-
         frecciaD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,10 +233,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 textlength = et.getText().length();
                 array_sort.clear();
                 associativo.clear();
-                int i = 0;
+                i = 0;
                 if (dati.size() > 0) {
                     //Ciclo sui punti su mappa
-                    for (PuntoSuMappa luoghi : dati) {
+                    for (final PuntoSuMappa luoghi : dati) {
 
                         if (textlength <= luoghi.nome_luogo.length()) {
                             //Controllo che un luogo contenga una parte o l'intera stringa inserita
@@ -245,18 +248,31 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                                 i++;
                             }
                         }
+                        //Azione alla pressione del tasto invio sulla tastiera
+                        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                            @Override
+                            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                                    Log.println(Log.ASSERT,"prova","prova");
+                                    int ris=Ricerca(array_sort,i,et.getText().toString().toLowerCase().trim());
+                                    if(ris!=-1){
+                                        Log.println(Log.ASSERT,"prova","prova" + array_sort.get(ris));
+                                        VaiAlLuogo(ris);
+                                    }
+                                    else{
+                                        Toast toast = Toast.makeText(getApplicationContext(),"Luogo " +
+                                                et.getText() + " non trovato.",Toast.LENGTH_SHORT);
+                                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                                        toast.show();
+                                    }
+                                    return true;
+                                }
+                                return false;
+                            }
+                        });
                     }
                 }
-                //Azione alla pressione del tasto invio sulla tastiera
-                et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_NONE) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
+
                 //Visualizzazione della lista di elementi
                 AppendList(array_sort);
                 //Se il testo inserito è vuoto, viene effettuato il clear della lista
@@ -274,28 +290,43 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
             public void onItemClick(AdapterView<?> arg0,
                                     View arg1, int position, long arg3) {
-                selezionato = associativo.get(position).marker;
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
-                //Visualizzazione dell'punto sulla mappa associato all'elemento cliccato nella lista
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(associativo.get(position).latitudine,
-                        associativo.get(position).longitudine), 15));
-                //Clear della lista
-                array_sort.clear();
-                associativo.clear();
-                AppendList(array_sort);
-                et.setText("");
-                showInfo p = new showInfo();
-                p.execute();
+                VaiAlLuogo(position);
             }
         });
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
+    public int Ricerca(ArrayList<String> str,int position,String s){
+        if(str!=null) {
+            for (int i = 0; i < str.size(); i++) {
+                if (s.equals(str.get(i).toLowerCase()))
+                {
+                    Log.println(Log.ASSERT,"prova ","trovato");
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
+    public void VaiAlLuogo(int i){
+        selezionato = associativo.get(i).marker;
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+        //Visualizzazione dell'punto sulla mappa associato all'elemento cliccato nella lista
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(associativo.get(i).latitudine,
+                associativo.get(i).longitudine), 15));
+        //Clear della lista
+        array_sort.clear();
+        associativo.clear();
+        AppendList(array_sort);
+        et.setText("");
+        showInfo p = new showInfo();
+        p.execute();
+    }
     public void checkFirstRun() {
         boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
         if (isFirstRun){
@@ -346,7 +377,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             Intent gpsOptionsIntent = new Intent(
                     android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(gpsOptionsIntent);
-        } else {
+        }
+        else {
             netLog.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, netLoglist, null);
         }
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -628,10 +660,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private void setImages() {
 
         IMGS = new int[4];
-        IMGS[0] = R.drawable.fd;
-        IMGS[1] = R.drawable.fs;
-        IMGS[2] = R.drawable.fd;
-        IMGS[3] = R.drawable.fs;
+        IMGS[0] = R.drawable.pagina1;
+        IMGS[1] = R.drawable.pagina2;
+        IMGS[2] = R.drawable.pagina3;
+        IMGS[3] = R.drawable.pagina4;
 
     }
 
